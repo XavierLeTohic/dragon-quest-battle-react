@@ -1,19 +1,31 @@
-import './reset.css';
-import './App.css';
+import "./reset.css";
+import "./App.css";
 
-import WorldMap from './stages/World/WorldMap';
+import Battle from "./stages/Battle/battle";
+import WorldMap from "./stages/World/WorldMap";
+import { GameProvider, useGame } from "./hooks/useGame";
 
 const App = () => {
-  return (
+  const {gameStart, setGameStart} = useGame(); 
+
+  const onClick = () => {
+    setGameStart(true);
+  }
+
+  console.log(gameStart);
+
+	return (
     <div className="app">
       <WorldMap>
-
-        <button className="start-fight-button">
-          Start fight
-        </button>
+        {!gameStart && <button type="button" className="start-fight-button" onClick={onClick}>Start fight</button>}
+        {gameStart && <Battle />}
       </WorldMap>
     </div>
-  );
+	);
 };
 
-export default App;
+function AppWithProvider() {
+  return <GameProvider><App /></GameProvider>
+}
+
+export default AppWithProvider;
