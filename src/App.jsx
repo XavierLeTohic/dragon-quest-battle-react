@@ -1,7 +1,7 @@
 import './reset.css';
 import './App.css';
 
-import WorldMap from './World/WorldMap';
+import WorldMap from './stages/World/WorldMap';
 
 const App = () => {
   return (
