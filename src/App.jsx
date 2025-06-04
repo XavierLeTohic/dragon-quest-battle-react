@@ -4,12 +4,8 @@ import './App.css';
 import WorldMap from './World/WorldMap';
 
 const App = () => {
-
-
-
-
   return (
-    <div>
+    <div className="app">
       <WorldMap>
 
         <button className="start-fight-button">
