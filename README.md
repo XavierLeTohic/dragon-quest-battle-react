@@ -1,11 +1,13 @@
-# Rsbuild project
+# Dragon Quest Battle React
+
+This project intend to train an intern to use React fundamentals
 
 ## Setup
 
 Install the dependencies:
 
 ```bash
-pnpm install
+npm install
 ```
 
 ## Get started
@@ -13,17 +15,5 @@ pnpm install
 Start the dev server:
 
 ```bash
-pnpm dev
-```
-
-Build the app for production:
-
-```bash
-pnpm build
-```
-
-Preview the production build locally:
-
-```bash
-pnpm preview
+npm dev
 ```
