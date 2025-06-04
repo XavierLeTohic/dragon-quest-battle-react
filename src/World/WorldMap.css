@@ -1,0 +1,8 @@
+.world-map {
+    display: block;
+    height: 100vh;
+    width: 100vw;
+    background-image: url('/public/world/outside-world.png');
+    background-size: cover;
+    background-position: center;
+}
