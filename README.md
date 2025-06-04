@@ -2,7 +2,9 @@
 
 This project intend to train an intern to use React fundamentals
 
-![Screenshot 2025-06-04 at 14 43 46](https://github.com/user-attachments/assets/f1f7e3cb-ea86-4143-abae-d08f79c7ff4b)
+![Screenshot 2025-06-04 at 14 43 46-min](https://github.com/user-attachments/assets/65651188-1d40-4a6c-8b37-1930482fe567)
+![E0Yb5xYVUAUYakO](https://github.com/user-attachments/assets/a3ec3511-dd70-4b51-8fca-5341f6a3d4ae)
+
 
 ## Setup
 
