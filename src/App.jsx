@@ -12,8 +12,6 @@ const App = () => {
     setGameStart(true);
   }
 
-  console.log(gameStart);
-
 	return (
     <div className="app">
       <WorldMap>
