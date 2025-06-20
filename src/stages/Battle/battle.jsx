@@ -21,7 +21,7 @@ function Battle() {
 		<div className="battle">
 			{currentEvent && (
 				<div>
-					{currentEvent.type === EVENTS_TYPES.BOX && <DialogBox text={currentEvent.text} id={currentEvent.id} />}
+					{currentEvent.type === EVENTS_TYPES.BOX && <DialogBox text={currentEvent.text} id={currentEvent.id} action={currentEvent.action} />}
 					{currentEvent.type === EVENTS_TYPES.ACTION_BOX && <DialogAction text={currentEvent.text} id={currentEvent.id} actions={currentEvent.actions} />}
 				</div>
 			)}

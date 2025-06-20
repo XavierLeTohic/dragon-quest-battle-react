@@ -4,8 +4,8 @@ export const EVENTS_TYPES = {BOX: "BOX", ACTION_BOX: "ACTION_BOX"};
 
 const GameContext = createContext(undefined);
 
-function generateBox(text) {
-    return {type: EVENTS_TYPES.BOX, id: crypto.randomUUID(), text };
+function generateBox(text, action) {
+    return {type: EVENTS_TYPES.BOX, id: crypto.randomUUID(), text, action};
 }
 function generateActionBox(text, actions) {
     return {type: EVENTS_TYPES.ACTION_BOX, id: crypto.randomUUID(), text, actions};
@@ -26,12 +26,16 @@ export const GameProvider = ({ children }) => {
     }
 
     const onFuite = () => {
-        resetGame();  
+        setCoreLoop((prevLoop) => {
+            prevLoop.splice(1, 0, generateBox("Fuite", resetGame));
+            return prevLoop;
+        });
+        next();
     };
 
     const generateInitialActions = () => { 
         const events = [
-            generateBox("Des monstres apparaissent !"),
+            generateBox("Des monstres apparaissent !", next),
             generateActionBox("Que voulez-vous faire ?", [
                 {id: "id", text: "Attaque", onclick: ()=> {}},
                 {id: "id2", text: "Fuite", onclick: onFuite},
