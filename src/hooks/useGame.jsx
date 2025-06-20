@@ -38,19 +38,25 @@ export const GameProvider = ({ children }) => {
     }, [gameStart]);
 
     const next = () => {
-    
-
         if (!gameStart) {
             return;
         }
 
-        const loop = coreLoop;
-        loop.slice(1);
+        setCoreLoop((prevLoop) => {
+			const newLoop = prevLoop.slice(1);
 
+			// logique pour ajouter le nombre minimum requis d'events
+			if(newLoop.length < 5) {
+				const eventsToAdd = 5 - newLoop.length; 
 
-        console.log('new loop', loop);
+				// loop pour ajouter les events
+                for (let i = 0 ; i < eventsToAdd ; i++) {
+                    newLoop.push(generateBox("hughhbuhuuyuy"));
+                }
+			}
 
-        setCoreLoop(loop);
+			return newLoop;
+		});
     }
 
 	return <GameContext.Provider value={{gameStart, setGameStart, coreLoop, setCoreLoop, next}}>{children}</GameContext.Provider>;
