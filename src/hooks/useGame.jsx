@@ -14,6 +14,8 @@ function generateActionBox(text, actions) {
 export const GameProvider = ({ children }) => {
     const [gameStart, setGameStart] = useState(false);
     const [coreLoop, setCoreLoop] = useState([]);
+    const [monstre, setMonstre] = useState({name: "Slime", pv: 10});
+    const [joueur, setJoueur] = useState({name: "Player 1", pv: 10, degats: 2});
 
     console.log("coreLoop", coreLoop);
 
@@ -33,11 +35,39 @@ export const GameProvider = ({ children }) => {
         next();
     };
 
+    function onAction() {
+        setCoreLoop((prevLoop) => {
+            prevLoop.splice(1, 0, generateActionBox("Faite un choix", [
+                {id: "idAttaque", text: "Attaque", onclick: onAttaque},
+                {id: "idParade", text: "Parade", onclick: () => {}},
+                {id: "idFuite", text: "Fuite", onclick: onFuite},
+            ]));
+            return prevLoop;
+        });
+        next();
+    }
+
+    function onAttaque() {
+        setMonstre((prevMonster) => {
+            const newMonster = {...prevMonster}
+            newMonster.pv = prevMonster.pv - 2;
+            return newMonster;
+        });
+        console.log(monstre);
+        if (monstre.pv <= 0) {
+            setCoreLoop((prevLoop) => {
+                prevLoop.splice(1, 0, generateBox("Victoire", resetGame));
+                return prevLoop;
+            });
+            next();
+        }
+    }
+
     const generateInitialActions = () => { 
         const events = [
             generateBox("Des monstres apparaissent !", next),
             generateActionBox("Que voulez-vous faire ?", [
-                {id: "id", text: "Attaque", onclick: ()=> {}},
+                {id: "id", text: "Combattre", onclick: onAction},
                 {id: "id2", text: "Fuite", onclick: onFuite},
             ]),
         ];
@@ -71,12 +101,11 @@ export const GameProvider = ({ children }) => {
                     newLoop.push(generateBox("plus d'événement"));
                 }
 			}
-
 			return newLoop;
 		});
     }
 
-	return <GameContext.Provider value={{gameStart, setGameStart, coreLoop, setCoreLoop, next}}>{children}</GameContext.Provider>;
+	return <GameContext.Provider value={{gameStart, setGameStart, coreLoop, setCoreLoop, next, monstre, setMonstre, joueur, setJoueur}}>{children}</GameContext.Provider>;
 }
 
 export const useGame = () => {

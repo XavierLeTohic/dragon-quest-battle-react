@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 
 
 function Battle() {
-	const {coreLoop} = useGame();
+	const {coreLoop, monstre} = useGame();
 	const [currentEvent, setCurrentEvent] = useState(null);
 
 	console.log("rerender", currentEvent);
@@ -19,6 +19,12 @@ function Battle() {
 
 	return (
 		<div className="battle">
+			{monstre && (
+				<div style={{backgroundColor: "white"}}>
+					{monstre.name}
+					{monstre.pv}
+				</div>
+			)}
 			{currentEvent && (
 				<div>
 					{currentEvent.type === EVENTS_TYPES.BOX && <DialogBox text={currentEvent.text} id={currentEvent.id} action={currentEvent.action} />}
