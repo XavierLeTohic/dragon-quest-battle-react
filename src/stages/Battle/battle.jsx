@@ -1,29 +1,28 @@
 import "./battle.css";
-import Action from '../Actions/actions'; 
 import { EVENTS_TYPES, useGame } from "../../hooks/useGame";
 import DialogBox from "../../components/DialogBox";
+import DialogAction from "../../components/DialogAction";
 import { useEffect, useState } from "react";
 
 
 function Battle() {
 	const {coreLoop} = useGame();
-	const [firstEvent, setFirstEvent] = useState(null);
+	const [currentEvent, setCurrentEvent] = useState(null);
 
-	console.log("rerender", firstEvent);
+	console.log("rerender", currentEvent);
 
 	useEffect(() => {
 		if (coreLoop.length > 0) {
-			setFirstEvent(coreLoop[0]);
+			setCurrentEvent(coreLoop[0]);
 		}
 	}, [coreLoop]);
 
 	return (
 		<div className="battle">
-			<Action />
-
-			{firstEvent && (
+			{currentEvent && (
 				<div>
-					{firstEvent.type === EVENTS_TYPES.BOX && <DialogBox text={firstEvent.item} id={firstEvent.id} />}
+					{currentEvent.type === EVENTS_TYPES.BOX && <DialogBox text={currentEvent.text} id={currentEvent.id} />}
+					{currentEvent.type === EVENTS_TYPES.ACTION_BOX && <DialogAction text={currentEvent.text} id={currentEvent.id} actions={currentEvent.actions} />}
 				</div>
 			)}
 		</div>

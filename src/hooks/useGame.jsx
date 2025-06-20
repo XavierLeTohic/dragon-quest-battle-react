@@ -1,11 +1,14 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-export const EVENTS_TYPES = {BOX: "BOX"};
+export const EVENTS_TYPES = {BOX: "BOX", ACTION_BOX: "ACTION_BOX"};
 
 const GameContext = createContext(undefined);
 
-function generateBox(item) {
-    return {type: EVENTS_TYPES.BOX, id: crypto.randomUUID(), item };
+function generateBox(text) {
+    return {type: EVENTS_TYPES.BOX, id: crypto.randomUUID(), text };
+}
+function generateActionBox(text, actions) {
+    return {type: EVENTS_TYPES.ACTION_BOX, id: crypto.randomUUID(), text, actions};
 }
 
 export const GameProvider = ({ children }) => {
@@ -14,17 +17,27 @@ export const GameProvider = ({ children }) => {
 
     console.log("coreLoop", coreLoop);
 
-    const generateInitialActions = () => { 
-        const actions = [
-            "Monstre 1 attaque",
-            "Joueur 1 attaque",
-            "Monstre 2 attaque",
-            "Joueur 2 attaque",
-            "Joueur 3 attaque"
-        ].map((item) => {
-            return generateBox(item);
+    const resetGame = () => {
+        setGameStart(false);
+        setCoreLoop((prevLoop) => {
+            prevLoop.splice(0, prevLoop.length);
+            return prevLoop;
         });
-        setCoreLoop(actions);
+    }
+
+    const onFuite = () => {
+        resetGame();  
+    };
+
+    const generateInitialActions = () => { 
+        const events = [
+            generateBox("Des monstres apparaissent !"),
+            generateActionBox("Que voulez-vous faire ?", [
+                {id: "id", text: "Attaque", onclick: ()=> {}},
+                {id: "id2", text: "Fuite", onclick: onFuite},
+            ]),
+        ];
+        setCoreLoop(events);
     };
     
     useEffect(() => {
@@ -51,7 +64,7 @@ export const GameProvider = ({ children }) => {
 
 				// loop pour ajouter les events
                 for (let i = 0 ; i < eventsToAdd ; i++) {
-                    newLoop.push(generateBox("hughhbuhuuyuy"));
+                    newLoop.push(generateBox("plus d'événement"));
                 }
 			}
 
