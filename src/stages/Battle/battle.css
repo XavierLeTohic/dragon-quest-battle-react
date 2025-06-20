@@ -1,6 +1,17 @@
 .battle {
-	display: block;
+	display: flex;
+	flex-direction: column;
 	height: 80vh;
 	width: 80vw;
-	background-color: rgba(33, 32, 32, 0.45);
+	gap: 20px;
+}
+.top-container {
+	flex: 60%;
+	position: relative;
+}
+.bot-container {
+	flex: 30%;
+	width: 80%;
+	margin: auto;
+	display: flex;
 }

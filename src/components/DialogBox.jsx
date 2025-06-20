@@ -4,7 +4,7 @@ function DialogBox({ text, id, action }) {
     const {coreLoop, setCoreLoop, next} = useGame();
 
     return (
-        <div key={id} style={{backgroundColor: "rgb(23, 16, 12", color: "white"}} onClick={action} onKeyDown={next} onKeyPress={next}>
+        <div key={id} onClick={action} onKeyDown={next} onKeyPress={next} className="dialog-box">
             {text}
         </div>
     );
