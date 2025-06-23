@@ -52,6 +52,10 @@ body,
 
 /* battle-image */
 .battle-image {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
 	border: 3px solid White;
 	border-radius: 8px;
 	width: 90%;
@@ -64,6 +68,15 @@ body,
 	text-align: center;
 	color: white;
 	font-size: 22px;
+}
+.monsters {
+	border: 3px solid white;
+	padding: 15px;
+	transition: 250ms;
+	will-change: transform;
+}
+.monsters:hover {
+	transform: scale(1.2);
 }
 
 /* bot-container */
@@ -119,7 +132,7 @@ body,
 	text-align: left;
 	text-shadow: 0px 0px 20px rgb(146, 145, 145);
 	transition-property: font-size;
-	transition-duration: 0.1s;
+	transition-duration: 250ms;
 }
 .action-buttons button:hover {
 	text-decoration: underline;

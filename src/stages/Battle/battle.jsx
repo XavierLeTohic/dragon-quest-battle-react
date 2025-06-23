@@ -2,11 +2,11 @@ import "./battle.css";
 import { EVENTS_TYPES, useGame } from "../../hooks/useGame";
 import DialogBox from "../../components/DialogBox";
 import DialogAction from "../../components/DialogAction";
-import { Children, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import StatsJoueur from "../../components/StatsJoueur";
 
 function Battle() {
-	const { coreLoop, monstres, joueurs } = useGame();
+	const { coreLoop, monstres, joueurs, inflictDamageMonster } = useGame();
 	const [currentEvent, setCurrentEvent] = useState(null);
 
 	useEffect(() => {
@@ -14,6 +14,14 @@ function Battle() {
 			setCurrentEvent(coreLoop[0]);
 		}
 	}, [coreLoop]);
+
+	function onMonsterClick(monster_id) {
+		if (currentEvent.type !== EVENTS_TYPES.ATTACK_SELECTION) {
+			return;
+		}
+		console.log(monster_id);
+		inflictDamageMonster(currentEvent.player_id, monster_id);
+	}
 
 	return (
 		<div className="battle">
@@ -35,13 +43,19 @@ function Battle() {
 						</div>
 					)}
 					<div className="battle-image">
-						{monstres.map((monstre) => {
-							return (
-								<div key={monstre.id}>
-									{monstre.name} - {monstre.pv}
-								</div>
-							);
-						})}
+						{monstres
+							.filter((monstre) => monstre.pv > 0)
+							.map((monstre) => {
+								return (
+									<div
+										key={monstre.id}
+										className="monsters"
+										onClick={() => onMonsterClick(monstre.id)}
+									>
+										{monstre.name} - {monstre.pv}
+									</div>
+								);
+							})}
 					</div>
 				</div>
 			)}
@@ -60,6 +74,13 @@ function Battle() {
 							id={currentEvent.id}
 							actions={currentEvent.actions}
 							intro={currentEvent.intro}
+						/>
+					)}
+					{currentEvent.type === EVENTS_TYPES.ATTACK_SELECTION && (
+						<DialogBox
+							text="Choisissez un monstre"
+							id={1}
+							action={() => null}
 						/>
 					)}
 				</div>

@@ -6,6 +6,7 @@ export const EVENTS_TYPES = {
 	PLAYER_TURN: "PLAYER_TURN",
 	MONSTER_TURN: "MONSTER_TURN",
 	END_TURN: "END_TURN",
+	ATTACK_SELECTION: "ATTACK_SELECTION",
 };
 
 const DEFAULT_MONSTRES = [
@@ -62,43 +63,62 @@ export const GameProvider = ({ children }) => {
 		next();
 	}
 
-	function onAttaque() {
+	function onAttaque(player_id) {
 		setCoreLoop((prevLoop) => {
-			prevLoop.splice(
-				1,
-				0,
-				generateBox("Le monstre perd 2 PV !", inflictDamageMonster),
-			);
+			prevLoop.splice(1, 0, { type: EVENTS_TYPES.ATTACK_SELECTION, player_id });
 			return prevLoop;
 		});
 		next();
 	}
 
-	function inflictDamageMonster() {
-		setMonstres((prevMonstres) => {
-			const newMonstres = [...prevMonstres];
-			newMonstres[0].pv = newMonstres[0].pv - 2;
-			return newMonstres;
+	function inflictDamageMonster(player_id, monster_id) {
+		console.log(player_id, monster_id);
+		setCoreLoop((prevLoop) => {
+			const newLoop = prevLoop.splice(
+				1,
+				0,
+				generateBox(`Player ${player_id} attack monster ${monster_id}`, () => {
+					setMonstres((prevMonstres) => {
+						const newMonstres = [...prevMonstres];
+						for (let i = 0; i < newMonstres.length; i++) {
+							if (newMonstres[i].id === monster_id) {
+								newMonstres[i] = {
+									...newMonstres[i],
+									pv: newMonstres[i].pv - 5,
+								};
+								break;
+							}
+						}
+						return newMonstres;
+					});
+					// next();
+				}),
+			);
+			return newLoop;
 		});
 		next();
 	}
 	function inflictDamagePlayer() {
 		setJoueurs((prevJoueurs) => {
 			const newJoueurs = [...prevJoueurs];
-			newJoueurs[0].pv = newJoueurs[0].pv - 2;
+			newJoueurs[0].pv = newJoueurs[0].pv - 1;
 			return newJoueurs;
 		});
 		next();
 	}
 
-	function onPlayerTurn() {
+	function onPlayerTurn(player_id) {
 		console.log("player turn");
 		setCoreLoop((prevLoop) => {
 			prevLoop.splice(
 				1,
 				0,
 				generateActionBox("Actions", [
-					{ id: "idAttaque", text: "Attaque", onclick: onAttaque },
+					{
+						id: "idAttaque",
+						text: "Attaque",
+						onclick: () => onAttaque(player_id),
+					},
 					{ id: "idParade", text: "Parade", onclick: () => {} },
 					{ id: "idSkills", text: "Skills", onclick: () => {} },
 					{ id: "idObjet", text: "Objets", onclick: () => {} },
@@ -203,13 +223,14 @@ export const GameProvider = ({ children }) => {
 	}, [gameStart]);
 
 	useEffect(() => {
-		if (coreLoop?.[0]?.type === EVENTS_TYPES.PLAYER_TURN) {
-			onPlayerTurn();
+		const event = coreLoop?.[0];
+		if (event?.type === EVENTS_TYPES.PLAYER_TURN) {
+			onPlayerTurn(event.player_id);
 		}
-		if (coreLoop?.[0]?.type === EVENTS_TYPES.MONSTER_TURN) {
+		if (event?.type === EVENTS_TYPES.MONSTER_TURN) {
 			onMonsterTurn();
 		}
-		if (coreLoop?.[0]?.type === EVENTS_TYPES.END_TURN) {
+		if (event?.type === EVENTS_TYPES.END_TURN) {
 			const events = generateTurns();
 			setCoreLoop((prevLoop) => {
 				prevLoop.splice(1, 0, ...events);
@@ -253,6 +274,7 @@ export const GameProvider = ({ children }) => {
 				setMonstres,
 				joueurs,
 				setJoueurs,
+				inflictDamageMonster,
 			}}
 		>
 			{children}
