@@ -9,8 +9,6 @@ function Battle() {
 	const { coreLoop, monstres, joueurs } = useGame();
 	const [currentEvent, setCurrentEvent] = useState(null);
 
-	console.log("rerender", currentEvent);
-
 	useEffect(() => {
 		if (coreLoop.length > 0) {
 			setCurrentEvent(coreLoop[0]);

@@ -49,7 +49,33 @@ export const GameProvider = ({ children }) => {
 		next();
 	};
 
-	function onAction() {
+	function onFight() {
+		next();
+	}
+
+	function onAttaque() {
+		setCoreLoop((prevLoop) => {
+			prevLoop.splice(
+				1,
+				0,
+				generateBox("Le monstre perd 2 PV !", inflictDamage),
+			);
+			return prevLoop;
+		});
+		next();
+	}
+
+	function inflictDamage() {
+		setMonstres((prevMonstres) => {
+			const newMonstres = [...prevMonstres];
+			newMonstres[0].pv = newMonstres[0].pv - 2;
+			return newMonstres;
+		});
+		next();
+	}
+
+	function onPlayerTurn() {
+		console.log("player turn");
 		setCoreLoop((prevLoop) => {
 			prevLoop.splice(
 				1,
@@ -66,43 +92,18 @@ export const GameProvider = ({ children }) => {
 		});
 		next();
 	}
-
-	function onAttaque() {
-		setCoreLoop((prevLoop) => {
-			prevLoop.splice(
-				1,
-				0,
-				generateBox("Le monstre perd 2 PV !", inflictDamage),
-				generateActionBox("Faite un choix", [
-					{ id: "idAttaque", text: "Attaque", onclick: onAttaque },
-					{ id: "idParade", text: "Parade", onclick: () => {} },
-					{ id: "idSkills", text: "Skills", onclick: () => {} },
-					{ id: "idObjet", text: "Objets", onclick: () => {} },
-					{ id: "idFuite", text: "Fuite", onclick: onFuite },
-				]),
-			);
-			return prevLoop;
-		});
-		next();
-	}
-
-	function inflictDamage() {
-		setMonstre((prevMonstre) => {
-			const newMonstre = { ...prevMonstre };
-			newMonstre.pv = newMonstre.pv - 2;
-			return newMonstre;
-		});
-		next();
+	function onMonsterTurn() {
+		console.log("monster turn");
 	}
 
 	const generateInitialEvents = () => {
 		const minEvents = joueurs.length + monstres.length * 2;
 
-		const maxEventsPlalyers = joueurs.length * 2;
+		const maxEventsPlayers = joueurs.length * 2;
 		const maxEventsMonsters = monstres.length * 2;
 
 		const turns = [
-			...Array(maxEventsPlalyers).fill({
+			...Array(maxEventsPlayers).fill({
 				type: EVENTS_TYPES.PLAYER_TURN,
 				player_id: joueurs[0].id,
 			}),
@@ -121,7 +122,7 @@ export const GameProvider = ({ children }) => {
 			generateActionBox(
 				"Des monstres apparaissent !",
 				[
-					{ id: "id", text: "Combattre", onclick: onAction },
+					{ id: "id", text: "Combattre", onclick: onFight },
 					{ id: "id2", text: "Fuite", onclick: onFuite },
 				],
 				true,
@@ -141,6 +142,15 @@ export const GameProvider = ({ children }) => {
 			}
 		}
 	}, [gameStart]);
+
+	useEffect(() => {
+		if (coreLoop?.[0]?.type === EVENTS_TYPES.PLAYER_TURN) {
+			onPlayerTurn();
+		}
+		if (coreLoop?.[0]?.type === EVENTS_TYPES.MONSTER_TURN) {
+			onMonsterTurn();
+		}
+	}, [coreLoop[0]]);
 
 	useEffect(() => {
 		if (monstres.every((monstre) => monstre.pv <= 0)) {
