@@ -5,7 +5,14 @@ export const EVENTS_TYPES = {
 	ACTION_BOX: "ACTION_BOX",
 	PLAYER_TURN: "PLAYER_TURN",
 	MONSTER_TURN: "MONSTER_TURN",
+	END_TURN: "END_TURN",
 };
+
+const DEFAULT_MONSTRES = [
+	{ name: "Slime", pv: 10, id: 1 },
+	{ name: "Gobelin", pv: 7, id: 2 },
+	{ name: "Loup", pv: 12, id: 3 },
+];
 
 const GameContext = createContext(undefined);
 
@@ -25,9 +32,11 @@ function generateActionBox(text, actions, intro = false) {
 export const GameProvider = ({ children }) => {
 	const [gameStart, setGameStart] = useState(false);
 	const [coreLoop, setCoreLoop] = useState([]);
-	const [monstres, setMonstres] = useState([{ name: "Slime", pv: 10 }]);
+	const [monstres, setMonstres] = useState(DEFAULT_MONSTRES);
 	const [joueurs, setJoueurs] = useState([
 		{ name: "Player 1", pv: 27, mp: 14, id: 1 },
+		// { name: "Player 2", pv: 24, mp: 20, id: 2 },
+		// { name: "Player 3", pv: 20, mp: 24, id: 3 },
 	]);
 
 	console.log("coreLoop", coreLoop);
@@ -38,7 +47,7 @@ export const GameProvider = ({ children }) => {
 			prevLoop.splice(0, prevLoop.length);
 			return prevLoop;
 		});
-		setMonstre({ name: "Slime", pv: 10 });
+		setMonstres(DEFAULT_MONSTRES);
 	};
 
 	const onFuite = () => {
@@ -58,18 +67,26 @@ export const GameProvider = ({ children }) => {
 			prevLoop.splice(
 				1,
 				0,
-				generateBox("Le monstre perd 2 PV !", inflictDamage),
+				generateBox("Le monstre perd 2 PV !", inflictDamageMonster),
 			);
 			return prevLoop;
 		});
 		next();
 	}
 
-	function inflictDamage() {
+	function inflictDamageMonster() {
 		setMonstres((prevMonstres) => {
 			const newMonstres = [...prevMonstres];
 			newMonstres[0].pv = newMonstres[0].pv - 2;
 			return newMonstres;
+		});
+		next();
+	}
+	function inflictDamagePlayer() {
+		setJoueurs((prevJoueurs) => {
+			const newJoueurs = [...prevJoueurs];
+			newJoueurs[0].pv = newJoueurs[0].pv - 2;
+			return newJoueurs;
 		});
 		next();
 	}
@@ -94,29 +111,19 @@ export const GameProvider = ({ children }) => {
 	}
 	function onMonsterTurn() {
 		console.log("monster turn");
+		setCoreLoop((prevLoop) => {
+			prevLoop.splice(
+				1,
+				0,
+				generateBox("Le monstre vous inflige 2 dégats", inflictDamagePlayer),
+			);
+			return prevLoop;
+		});
+		next();
 	}
 
 	const generateInitialEvents = () => {
-		const minEvents = joueurs.length + monstres.length * 2;
-
-		const maxEventsPlayers = joueurs.length * 2;
-		const maxEventsMonsters = monstres.length * 2;
-
-		const turns = [
-			...Array(maxEventsPlayers).fill({
-				type: EVENTS_TYPES.PLAYER_TURN,
-				player_id: joueurs[0].id,
-			}),
-			...Array(maxEventsMonsters).fill({
-				type: EVENTS_TYPES.MONSTER_TURN,
-				monster_id: monstres[0].id,
-			}),
-		];
-
-		for (let i = 0; i < turns.length; i++) {
-			const j = Math.floor(Math.random() * (i + 1));
-			[turns[i], turns[j]] = [turns[j], turns[i]];
-		}
+		const turns = generateTurns();
 
 		const events = [
 			generateActionBox(
@@ -132,6 +139,58 @@ export const GameProvider = ({ children }) => {
 
 		setCoreLoop(events);
 	};
+
+	function generateTurns() {
+		const turns = [
+			...joueurs.flatMap((joueur) =>
+				Array(1).fill({
+					type: EVENTS_TYPES.PLAYER_TURN,
+					player_id: joueur.id,
+				}),
+			),
+			...monstres.flatMap((monstre) =>
+				Array(1).fill({
+					type: EVENTS_TYPES.MONSTER_TURN,
+					monster_id: monstre.id,
+				}),
+			),
+		];
+
+		const playerTurns = turns.filter(
+			(turn) => turn.type === EVENTS_TYPES.PLAYER_TURN,
+		);
+		const monsterTurns = turns.filter(
+			(turn) => turn.type === EVENTS_TYPES.MONSTER_TURN,
+		);
+
+		// Shuffle each turn type array
+		for (let i = playerTurns.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[playerTurns[i], playerTurns[j]] = [playerTurns[j], playerTurns[i]];
+		}
+		for (let i = monsterTurns.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[monsterTurns[i], monsterTurns[j]] = [monsterTurns[j], monsterTurns[i]];
+		}
+
+		const interleavedTurns = [];
+		let i = 0;
+		let j = 0;
+		while (i < playerTurns.length || j < monsterTurns.length) {
+			if (i < playerTurns.length) {
+				interleavedTurns.push(playerTurns[i]);
+				i++;
+			}
+			if (j < monsterTurns.length) {
+				interleavedTurns.push(monsterTurns[j]);
+				j++;
+			}
+		}
+
+		interleavedTurns.push({ type: EVENTS_TYPES.END_TURN });
+
+		return interleavedTurns;
+	}
 
 	useEffect(() => {
 		if (gameStart) {
@@ -149,6 +208,14 @@ export const GameProvider = ({ children }) => {
 		}
 		if (coreLoop?.[0]?.type === EVENTS_TYPES.MONSTER_TURN) {
 			onMonsterTurn();
+		}
+		if (coreLoop?.[0]?.type === EVENTS_TYPES.END_TURN) {
+			const events = generateTurns();
+			setCoreLoop((prevLoop) => {
+				prevLoop.splice(1, 0, ...events);
+				return prevLoop;
+			});
+			next();
 		}
 	}, [coreLoop[0]]);
 
@@ -170,15 +237,6 @@ export const GameProvider = ({ children }) => {
 		setCoreLoop((prevLoop) => {
 			const newLoop = prevLoop.slice(1);
 
-			// logique pour ajouter le nombre minimum requis d'events
-			if (newLoop.length < 5) {
-				const eventsToAdd = 5 - newLoop.length;
-
-				// loop pour ajouter les events
-				for (let i = 0; i < eventsToAdd; i++) {
-					newLoop.push(generateBox("plus d'événement"));
-				}
-			}
 			return newLoop;
 		});
 	};

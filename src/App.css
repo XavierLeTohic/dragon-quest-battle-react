@@ -21,16 +21,36 @@ body,
 }
 
 /* top-container */
+
+/* etat-joueurs */
 .etat-joueurs {
+	display: flex;
+	justify-content: center;
+	gap: 20px;
 	position: absolute;
+	top: -50px;
+}
+.joueur-stats {
+	position: static;
 	border: 3px solid white;
 	border-radius: 8px;
-	top: -10px;
+	box-shadow: 0px 0px 10px 3px black;
+	background-color: rgba(27, 27, 27, 0.8);
 	color: white;
-	background-color: rgba(27, 27, 27, 0.9);
 	font-size: 22px;
+	padding: 0;
+	width: 200px;
+}
+.joueur-name {
+	border-bottom: 3px solid white;
+	padding: 10px;
+	text-align: center;
+}
+.joueur-statut {
+	padding: 10px;
 }
 
+/* battle-image */
 .battle-image {
 	border: 3px solid White;
 	border-radius: 8px;
