@@ -1,5 +1,7 @@
-html, body, * {
-	font-family: 'Jersey 10', sans-serif;
+html,
+body,
+* {
+	font-family: "Jersey 10", sans-serif;
 	letter-spacing: 1.5px;
 }
 
@@ -22,18 +24,26 @@ html, body, * {
 .etat-joueurs {
 	position: absolute;
 	border: 3px solid white;
+	border-radius: 8px;
 	top: -10px;
+	color: white;
+	background-color: rgba(27, 27, 27, 0.9);
+	font-size: 22px;
 }
 
 .battle-image {
 	border: 3px solid White;
 	border-radius: 8px;
 	width: 90%;
-    height: 100%;
-    margin: auto;
+	height: 100%;
+	margin: auto;
 	background-image: url("/public/battle/forest.png");
 	background-size: cover;
 	background-position: center;
+
+	text-align: center;
+	color: white;
+	font-size: 22px;
 }
 
 /* bot-container */
@@ -41,7 +51,8 @@ html, body, * {
 	align-self: flex-start;
 }
 
-.dialog-box, .dialog-action {
+.dialog-box,
+.dialog-action {
 	border: 3px solid white;
 	background-color: rgba(27, 27, 27, 0.9);
 	font-size: 25px;
@@ -70,7 +81,7 @@ html, body, * {
 	display: flex;
 	flex-direction: row;
 }
-.action-buttons.intro button{
+.action-buttons.intro button {
 	text-align: center;
 }
 .action-buttons {
@@ -96,9 +107,3 @@ html, body, * {
 	text-shadow: 0px 0px 20px White;
 	font-size: 23px;
 }
-
-
-
-
-
-

@@ -3,9 +3,10 @@ import { EVENTS_TYPES, useGame } from "../../hooks/useGame";
 import DialogBox from "../../components/DialogBox";
 import DialogAction from "../../components/DialogAction";
 import { Children, useEffect, useState } from "react";
+import StatsJoueur from "../../components/StatsJoueur";
 
 function Battle() {
-	const {coreLoop, monstre, joueur} = useGame();
+	const { coreLoop, monstres, joueurs } = useGame();
 	const [currentEvent, setCurrentEvent] = useState(null);
 
 	console.log("rerender", currentEvent);
@@ -18,27 +19,51 @@ function Battle() {
 
 	return (
 		<div className="battle">
-			{monstre && (
+			{monstres && (
 				<div className="top-container">
-					{joueur && (
+					{joueurs && (
 						<div className="etat-joueurs">
-							{joueur.name}
-							{joueur.pv}
-							{joueur.mp}
+							{joueurs.map((joueur) => {
+								return (
+									<StatsJoueur
+										key={joueur.id}
+										name={joueur.name}
+										pv={joueur.pv}
+										mp={joueur.mp}
+										id={joueur.id}
+									/>
+								);
+							})}
 						</div>
 					)}
-					<div className="battle-image"> 
-						
+					<div className="battle-image">
+						{monstres.map((monstre) => {
+							return (
+								<div key={monstre.id}>
+									{monstre.name} - {monstre.pv}
+								</div>
+							);
+						})}
 					</div>
-			
-					{monstre.name}
-					{monstre.pv}
 				</div>
 			)}
 			{currentEvent && (
 				<div className="bot-container">
-					{currentEvent.type === EVENTS_TYPES.BOX && <DialogBox text={currentEvent.text} id={currentEvent.id} action={currentEvent.action} />}
-					{currentEvent.type === EVENTS_TYPES.ACTION_BOX && <DialogAction text={currentEvent.text} id={currentEvent.id} actions={currentEvent.actions} intro={currentEvent.intro} />}
+					{currentEvent.type === EVENTS_TYPES.BOX && (
+						<DialogBox
+							text={currentEvent.text}
+							id={currentEvent.id}
+							action={currentEvent.action}
+						/>
+					)}
+					{currentEvent.type === EVENTS_TYPES.ACTION_BOX && (
+						<DialogAction
+							text={currentEvent.text}
+							id={currentEvent.id}
+							actions={currentEvent.actions}
+							intro={currentEvent.intro}
+						/>
+					)}
 				</div>
 			)}
 		</div>
