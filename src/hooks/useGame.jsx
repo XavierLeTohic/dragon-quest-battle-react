@@ -20,13 +20,13 @@ const GameContext = createContext(undefined);
 function generateBox(text, action) {
 	return { type: EVENTS_TYPES.BOX, id: crypto.randomUUID(), text, action };
 }
-function generateActionBox(text, actions, intro = false) {
+function generateActionBox(text, actions, options = {}) {
 	return {
 		type: EVENTS_TYPES.ACTION_BOX,
 		id: crypto.randomUUID(),
 		text,
 		actions,
-		intro,
+		...options,
 	};
 }
 
@@ -113,17 +113,21 @@ export const GameProvider = ({ children }) => {
 			prevLoop.splice(
 				1,
 				0,
-				generateActionBox("Actions", [
-					{
-						id: "idAttaque",
-						text: "Attaque",
-						onclick: () => onAttaque(player_id),
-					},
-					{ id: "idParade", text: "Parade", onclick: () => {} },
-					{ id: "idSkills", text: "Skills", onclick: () => {} },
-					{ id: "idObjet", text: "Objets", onclick: () => {} },
-					{ id: "idFuite", text: "Fuite", onclick: onFuite },
-				]),
+				generateActionBox(
+					`Player ${player_id}`,
+					[
+						{
+							id: "idAttaque",
+							text: "Attaque",
+							onclick: () => onAttaque(player_id),
+						},
+						{ id: "idParade", text: "Parade", onclick: () => {} },
+						{ id: "idSkills", text: "Skills", onclick: () => {} },
+						{ id: "idObjet", text: "Objets", onclick: () => {} },
+						{ id: "idFuite", text: "Fuite", onclick: onFuite },
+					],
+					{ player_id },
+				),
 			);
 			return prevLoop;
 		});
@@ -152,7 +156,7 @@ export const GameProvider = ({ children }) => {
 					{ id: "id", text: "Combattre", onclick: onFight },
 					{ id: "id2", text: "Fuite", onclick: onFuite },
 				],
-				true,
+				{ intro: true },
 			),
 			...turns,
 		];

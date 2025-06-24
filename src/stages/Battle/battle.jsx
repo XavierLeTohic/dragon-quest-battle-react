@@ -28,7 +28,7 @@ function Battle() {
 			{monstres && (
 				<div className="top-container">
 					{joueurs && (
-						<div className="etat-joueurs">
+						<div className={"etat-joueurs"}>
 							{joueurs.map((joueur) => {
 								return (
 									<StatsJoueur
@@ -51,7 +51,7 @@ function Battle() {
 										key={monstre.id}
 										className={
 											currentEvent?.type === EVENTS_TYPES.ATTACK_SELECTION
-												? "selectable monsters"
+												? "monsters selectable"
 												: "monsters"
 										}
 										onClick={() => onMonsterClick(monstre.id)}
