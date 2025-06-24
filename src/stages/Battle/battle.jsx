@@ -49,7 +49,11 @@ function Battle() {
 								return (
 									<div
 										key={monstre.id}
-										className="monsters"
+										className={
+											currentEvent?.type === EVENTS_TYPES.ATTACK_SELECTION
+												? "selectable monsters"
+												: "monsters"
+										}
 										onClick={() => onMonsterClick(monstre.id)}
 									>
 										{monstre.name} - {monstre.pv}

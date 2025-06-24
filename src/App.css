@@ -75,7 +75,7 @@ body,
 	transition: 250ms;
 	will-change: transform;
 }
-.monsters:hover {
+.monsters.selectable:hover {
 	transform: scale(1.2);
 }
 

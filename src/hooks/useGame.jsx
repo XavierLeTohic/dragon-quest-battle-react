@@ -36,8 +36,8 @@ export const GameProvider = ({ children }) => {
 	const [monstres, setMonstres] = useState(DEFAULT_MONSTRES);
 	const [joueurs, setJoueurs] = useState([
 		{ name: "Player 1", pv: 27, mp: 14, id: 1 },
-		// { name: "Player 2", pv: 24, mp: 20, id: 2 },
-		// { name: "Player 3", pv: 20, mp: 24, id: 3 },
+		{ name: "Player 2", pv: 24, mp: 20, id: 2 },
+		{ name: "Player 3", pv: 20, mp: 24, id: 3 },
 	]);
 
 	console.log("coreLoop", coreLoop);
@@ -74,7 +74,7 @@ export const GameProvider = ({ children }) => {
 	function inflictDamageMonster(player_id, monster_id) {
 		console.log(player_id, monster_id);
 		setCoreLoop((prevLoop) => {
-			const newLoop = prevLoop.splice(
+			prevLoop.splice(
 				1,
 				0,
 				generateBox(`Player ${player_id} attack monster ${monster_id}`, () => {
@@ -91,10 +91,10 @@ export const GameProvider = ({ children }) => {
 						}
 						return newMonstres;
 					});
-					// next();
+					next();
 				}),
 			);
-			return newLoop;
+			return prevLoop;
 		});
 		next();
 	}
