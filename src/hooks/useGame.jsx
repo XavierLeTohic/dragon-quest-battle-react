@@ -10,7 +10,7 @@ export const EVENTS_TYPES = {
 };
 
 const DEFAULT_MONSTRES = [
-	{ name: "Slime", pv: 10, id: 1 },
+	{ name: "Toady", pv: 10, id: 1, imgUrl: "monsters/Toady.png" },
 	{ name: "Gobelin", pv: 7, id: 2 },
 	{ name: "Loup", pv: 12, id: 3 },
 ];
