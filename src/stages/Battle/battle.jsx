@@ -4,7 +4,6 @@ import DialogBox from "../../components/DialogBox";
 import DialogAction from "../../components/DialogAction";
 import { useEffect, useState } from "react";
 import StatsJoueur from "../../components/StatsJoueur";
-import { SpriteAnimator } from "react-sprite-animator";
 
 function Battle() {
 	const { coreLoop, monstres, joueurs, inflictDamageMonster } = useGame();
@@ -16,12 +15,12 @@ function Battle() {
 		}
 	}, [coreLoop]);
 
-	function onMonsterClick(monster_id) {
+	function onMonsterClick(monster_id, monster_name) {
 		if (currentEvent.type !== EVENTS_TYPES.ATTACK_SELECTION) {
 			return;
 		}
 		console.log(monster_id);
-		inflictDamageMonster(currentEvent.player_id, monster_id);
+		inflictDamageMonster(currentEvent.player_id, monster_id, monster_name);
 	}
 
 	return (
@@ -55,7 +54,7 @@ function Battle() {
 												? "monsters selectable"
 												: "monsters"
 										}
-										onClick={() => onMonsterClick(monstre.id)}
+										onClick={() => onMonsterClick(monstre.id, monstre.name)}
 									>
 										<img src={monstre.imgUrl} />
 									</div>

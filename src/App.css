@@ -26,7 +26,7 @@ body,
 .etat-joueurs {
 	display: flex;
 	justify-content: center;
-	gap: 20px;
+	gap: 30px;
 	position: absolute;
 	top: -50px;
 }
@@ -45,7 +45,7 @@ body,
 	will-change: transform;
 }
 .joueur-stats.player {
-	transform: scale(1.1);
+	transform: scale(1.2);
 }
 
 .joueur-name {
@@ -83,6 +83,7 @@ body,
 }
 .monsters.selectable:hover {
 	transform: scale(1.2);
+	cursor: pointer;
 }
 
 /* bot-container */
@@ -125,11 +126,12 @@ body,
 }
 .action-buttons {
 	display: flex;
-	gap: 10px;
+	gap: 20px;
 	padding: 15px;
 	flex-direction: column;
 }
 .action-buttons button {
+	position: relative;
 	width: 100%;
 	font-size: 22px;
 	background-color: transparent;
@@ -137,12 +139,13 @@ body,
 	border: none;
 	text-align: left;
 	text-shadow: 0px 0px 20px rgb(146, 145, 145);
-	transition-property: font-size;
-	transition-duration: 250ms;
+	transition: 250ms;
 }
+
 .action-buttons button:hover {
-	text-decoration: underline;
+	background-color: rgba(235, 235, 235, 0.153);
+	border-radius: 8px;
 	cursor: pointer;
-	text-shadow: 0px 0px 20px White;
-	font-size: 23px;
+	height: 100%;
+	width: 100%;
 }
