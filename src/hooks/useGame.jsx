@@ -201,14 +201,16 @@ export const GameProvider = ({ children }) => {
 							id: "idAttaque",
 							text: "Attaque",
 							onclick: () => {},
-							actions: monstres.map((monstre) => {
-								return {
-									id: monstre.id,
-									text: monstre.name,
-									onclick: () =>
-										inflictDamageMonster(player_id, monstre.id, monstre.name),
-								};
-							}),
+							actions: monstres
+								.filter((monstre) => monstre.pv > 0)
+								.map((monstre) => {
+									return {
+										id: monstre.id,
+										text: monstre.name,
+										onclick: () =>
+											inflictDamageMonster(player_id, monstre.id, monstre.name),
+									};
+								}),
 						},
 						{ id: "idParade", text: "Parade", onclick: () => {} },
 						{ id: "idSkills", text: "Skills", onclick: () => {} },
@@ -225,7 +227,7 @@ export const GameProvider = ({ children }) => {
 	function onMonsterTurn(monster_id) {
 		console.log("monster turn");
 		const player_index = Math.floor(Math.random() * joueurs.length) + 1;
-		const player = joueurs[player_index];
+		const player = joueurs[player_index - 1];
 		const monster = monstres.find((monstre) => monstre.id === monster_id);
 		setCoreLoop((prevLoop) => {
 			prevLoop.splice(
@@ -337,7 +339,7 @@ export const GameProvider = ({ children }) => {
 			onMonsterTurn(event.monster_id);
 		}
 		if (event?.type === EVENTS_TYPES.END_TURN) {
-			const events = generateTurns();
+			const events = generateTurns(monstres);
 			setCoreLoop((prevLoop) => {
 				prevLoop.splice(1, 0, ...events);
 				return prevLoop;
