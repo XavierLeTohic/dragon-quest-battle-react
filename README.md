@@ -58,3 +58,13 @@ No need to add animations.
 ### Plan before coding
 
 Using the tool of your choice (canvas)
+
+
+### A ajouter
+
+- Sond et animation pour l'attaque.
+- Tour des monstres afficcher visuellement.
+- Texte lorsqu'un monstre ou un héro meure.
+- Animation pour la mort d'un monstre.
+- Icone pour afficher qu'un héro est mort.
+- Couleur en fonction des pv des héros et monstres.
