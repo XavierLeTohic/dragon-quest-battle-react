@@ -10,9 +10,9 @@ export const EVENTS_TYPES = {
 };
 
 const DEFAULT_MONSTRES = [
-	{ name: "Bunicorn", pv: 10, id: 1, imgUrl: "monsters/Bunicorn.png" },
-	{ name: "Slime", pv: 7, id: 2, imgUrl: "monsters/Slime.png" },
-	{ name: "Deadnaut", pv: 12, id: 3, imgUrl: "monsters/Deadnaut.png" },
+	{ name: "Bunicorn", pv: 10, type: 1, imgUrl: "monsters/Bunicorn.png" },
+	{ name: "Slime", pv: 7, type: 2, imgUrl: "monsters/Slime.png" },
+	{ name: "Deadnaut", pv: 12, type: 3, imgUrl: "monsters/Deadnaut.png" },
 ];
 
 const GameContext = createContext(undefined);
@@ -36,13 +36,13 @@ function generateMonsters() {
 	for (let i = 0; i < nbMonsters; i++) {
 		const idMonster = Math.floor(Math.random() * 3) + 1;
 		const selectedMonster = DEFAULT_MONSTRES.find(
-			(monster) => monster.id === idMonster,
+			(monster) => monster.type === idMonster,
 		);
 
 		if (selectedMonster) {
 			monsters.push({
 				...selectedMonster,
-				id: crypto.randomUUID(),
+				id: i + 1,
 			});
 		}
 	}
@@ -99,18 +99,34 @@ export const GameProvider = ({ children }) => {
 				1,
 				0,
 				generateBox(`${player.name} attack ${monster_name}`, () => {
+					next();
+				}),
+				// todo: ajouter animation et sond
+				generateBox("audio + animation", () => {
+					const degats = 10;
 					setMonstres((prevMonstres) => {
 						const newMonstres = [...prevMonstres];
 						for (let i = 0; i < newMonstres.length; i++) {
 							if (newMonstres[i].id === monster_id) {
 								newMonstres[i] = {
 									...newMonstres[i],
-									pv: newMonstres[i].pv - 15,
+									pv: newMonstres[i].pv - degats,
 								};
 								break;
 							}
 						}
 						return newMonstres;
+					});
+					setCoreLoop((prevLoop) => {
+						prevLoop.splice(
+							1,
+							0,
+							generateBox(
+								`${player.name} inflige ${degats} dégâts à ${monster_name}`,
+								() => next(),
+							),
+						);
+						return prevLoop;
 					});
 					next();
 				}),
@@ -119,11 +135,38 @@ export const GameProvider = ({ children }) => {
 		});
 		next();
 	}
-	function inflictDamagePlayer() {
-		setJoueurs((prevJoueurs) => {
-			const newJoueurs = [...prevJoueurs];
-			newJoueurs[0].pv = newJoueurs[0].pv - 1;
-			return newJoueurs;
+	function inflictDamagePlayer(
+		player_id,
+		player_name,
+		monster_id,
+		monster_name,
+	) {
+		setCoreLoop((prevLoop) => {
+			prevLoop.splice(
+				1,
+				0,
+				generateBox("audio + animation", () => {
+					const degats = 1;
+					setJoueurs((prevJoueurs) => {
+						const newJoueurs = [...prevJoueurs];
+						newJoueurs[0].pv = newJoueurs[0].pv - degats;
+						return newJoueurs;
+					});
+					setCoreLoop((prevLoop) => {
+						prevLoop.splice(
+							1,
+							0,
+							generateBox(
+								`${monster_name} inflige ${degats} à ${player_name}`,
+								() => next(),
+							),
+						);
+						return prevLoop;
+					});
+					next();
+				}),
+			);
+			return prevLoop;
 		});
 		next();
 	}
@@ -154,13 +197,19 @@ export const GameProvider = ({ children }) => {
 		});
 		next();
 	}
-	function onMonsterTurn() {
+	function onMonsterTurn(monster_id) {
 		console.log("monster turn");
+		const player_index = Math.floor(Math.random() * joueurs.length) + 1;
+		const player = joueurs[player_index];
+		const monster = monstres.find((monstre) => monstre.id === monster_id);
+		console.log(monster_id);
 		setCoreLoop((prevLoop) => {
 			prevLoop.splice(
 				1,
 				0,
-				generateBox("Le monstre vous inflige 2 dégats", inflictDamagePlayer),
+				generateBox(`${monster.name} attack ${player.name}`, () =>
+					inflictDamagePlayer(player.id, player.name, monster_id, monster.name),
+				),
 			);
 			return prevLoop;
 		});
@@ -170,7 +219,7 @@ export const GameProvider = ({ children }) => {
 	const generateInitialEvents = () => {
 		const initialMonsters = generateMonsters();
 		setMonstres(initialMonsters);
-		const turns = generateTurns();
+		const turns = generateTurns(initialMonsters);
 
 		const events = [
 			generateActionBox(
@@ -188,7 +237,8 @@ export const GameProvider = ({ children }) => {
 		setGameReady(true);
 	};
 
-	function generateTurns() {
+	function generateTurns(initialMonsters) {
+		console.log(monstres);
 		const turns = [
 			...joueurs.flatMap((joueur) =>
 				Array(1).fill({
@@ -196,7 +246,7 @@ export const GameProvider = ({ children }) => {
 					player_id: joueur.id,
 				}),
 			),
-			...monstres.flatMap((monstre) =>
+			...initialMonsters.flatMap((monstre) =>
 				Array(1).fill({
 					type: EVENTS_TYPES.MONSTER_TURN,
 					monster_id: monstre.id,
@@ -255,7 +305,7 @@ export const GameProvider = ({ children }) => {
 			onPlayerTurn(event.player_id);
 		}
 		if (event?.type === EVENTS_TYPES.MONSTER_TURN) {
-			onMonsterTurn();
+			onMonsterTurn(event.monster_id);
 		}
 		if (event?.type === EVENTS_TYPES.END_TURN) {
 			const events = generateTurns();
@@ -270,6 +320,21 @@ export const GameProvider = ({ children }) => {
 	useEffect(() => {
 		if (!gameStart && !gameReady) {
 			return;
+		}
+		for (const monstre of monstres) {
+			if (monstre.pv <= 0) {
+				setCoreLoop((prevLoop) => {
+					return prevLoop.filter((chaqueEvent) => {
+						if (
+							chaqueEvent.type === EVENTS_TYPES.MONSTER_TURN &&
+							chaqueEvent.monster_id === monstre.id
+						) {
+							return false;
+						}
+						return true;
+					});
+				});
+			}
 		}
 		if (monstres.every((monstre) => monstre.pv <= 0)) {
 			setCoreLoop((prevLoop) => {
