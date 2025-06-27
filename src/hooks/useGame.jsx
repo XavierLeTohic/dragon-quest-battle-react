@@ -51,7 +51,7 @@ function generateMonsters() {
 }
 
 export const GameProvider = ({ children }) => {
-	const { loadSound, playSound, init } = useAudio();
+	const { loadSound, playSound, init, destroy } = useAudio();
 	const [gameReady, setGameReady] = useState(false);
 	const [gameStart, setGameStart] = useState(false);
 	const [coreLoop, setCoreLoop] = useState([]);
@@ -318,11 +318,13 @@ export const GameProvider = ({ children }) => {
 			console.log("Game as starting");
 
 			loadSound("battle_theme", "audio/battle_theme.mp3");
-			playSound("battle_theme", 1);
+			playSound("battle_theme", 0.5);
 
 			if (coreLoop.length === 0) {
 				generateInitialEvents();
 			}
+		} else {
+			destroy();
 		}
 	}, [gameStart]);
 

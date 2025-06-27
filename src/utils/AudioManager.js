@@ -8,7 +8,19 @@ class AudioManager {
 		)();
 	}
 
+	destroy() {
+		if (this.audioContext && this.audioContext.state !== "close") {
+			this.audioContext.close();
+		}
+		this.sounds.clear();
+	}
+
 	async loadSound(name, url) {
+		if (this.sounds.has(name)) {
+			console.log(`Sound "${name}" already loaded, skipping...`);
+			return;
+		}
+
 		const response = await fetch(url);
 		const arrayBuffer = await response.arrayBuffer();
 		const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);

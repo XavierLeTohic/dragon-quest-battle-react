@@ -1,8 +1,20 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AudioManager from "../utils/AudioManager";
 
 export const useAudio = () => {
 	const [audioManager, setAudioManager] = useState(null);
+
+	function destroy() {
+		if (audioManager) {
+			audioManager.destroy();
+		}
+	}
+
+	useEffect(() => {
+		return () => {
+			destroy();
+		};
+	}, []);
 
 	function init() {
 		setAudioManager(new AudioManager());
@@ -20,7 +32,7 @@ export const useAudio = () => {
 		(name, volume) => {
 			setTimeout(() => {
 				audioManager.playSound(name, volume);
-			}, 50);
+			}, 500);
 		},
 		[audioManager],
 	);
@@ -32,5 +44,5 @@ export const useAudio = () => {
 		[audioManager],
 	);
 
-	return { loadSound, playSound, playMultipleSounds, init };
+	return { loadSound, playSound, playMultipleSounds, init, destroy };
 };
