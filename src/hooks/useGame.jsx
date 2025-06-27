@@ -149,7 +149,16 @@ export const GameProvider = ({ children }) => {
 					const degats = 1;
 					setJoueurs((prevJoueurs) => {
 						const newJoueurs = [...prevJoueurs];
-						newJoueurs[0].pv = newJoueurs[0].pv - degats;
+						for (let i = 0; i < newJoueurs.length; i++) {
+							if (newJoueurs[i].id === player_id) {
+								newJoueurs[i] = {
+									...newJoueurs[i],
+									pv: newJoueurs[i].pv - degats,
+								};
+								break;
+							}
+						}
+						console.log(newJoueurs);
 						return newJoueurs;
 					});
 					setCoreLoop((prevLoop) => {
@@ -183,7 +192,15 @@ export const GameProvider = ({ children }) => {
 						{
 							id: "idAttaque",
 							text: "Attaque",
-							onclick: () => onAttaque(player_id),
+							onclick: () => {},
+							actions: monstres.map((monstre) => {
+								return {
+									id: monstre.id,
+									text: monstre.name,
+									onclick: () =>
+										inflictDamageMonster(player_id, monstre.id, monstre.name),
+								};
+							}),
 						},
 						{ id: "idParade", text: "Parade", onclick: () => {} },
 						{ id: "idSkills", text: "Skills", onclick: () => {} },
@@ -202,7 +219,6 @@ export const GameProvider = ({ children }) => {
 		const player_index = Math.floor(Math.random() * joueurs.length) + 1;
 		const player = joueurs[player_index];
 		const monster = monstres.find((monstre) => monstre.id === monster_id);
-		console.log(monster_id);
 		setCoreLoop((prevLoop) => {
 			prevLoop.splice(
 				1,
