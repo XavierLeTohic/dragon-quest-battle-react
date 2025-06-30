@@ -4,6 +4,7 @@ import DialogBox from "../../components/DialogBox";
 import DialogAction from "../../components/DialogAction";
 import { useEffect, useState } from "react";
 import StatsJoueur from "../../components/StatsJoueur";
+import { SpriteAnimator } from "react-sprite-animator";
 
 function Battle() {
 	const { coreLoop, monstres, joueurs, inflictDamageMonster } = useGame();
@@ -57,6 +58,9 @@ function Battle() {
 										onClick={() => onMonsterClick(monstre.id, monstre.name)}
 									>
 										<img src={monstre.imgUrl} />
+										{/* <SpriteAnimator 
+											sprite: 
+										/> */}
 									</div>
 								);
 							})}
